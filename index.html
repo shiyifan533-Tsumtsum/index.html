@@ -406,6 +406,9 @@ async function aiDive(id,topic){
   const spin=document.getElementById("ai-s-"+id+"-"+topic);
   const btn=document.getElementById("ai-btn-"+id);
   if(!body||!spin){alert("UI元素未找到，请刷新页面重试。id="+id+" topic="+topic);return;}
+  // get active tab topic
+  const activetab=document.querySelector(`#ai-tabs-${eid(id)} .ai-tab.act`);
+  if(!topic&&activetab)topic=activetab.dataset.t||"intent";
   if(AC[ck]){body.innerHTML=md2html(AC[ck]);body.classList.add("on");spin.classList.remove("on");return;}
   const prompts={
     intent:`你是WCAG 2.2无障碍专家，用中文回答。针对WCAG 2.2成功标准 ${id} 「${item.cn}」(${item.en})，详细解释：
@@ -454,9 +457,10 @@ async function aiDive(id,topic){
   btn.disabled=false;
 }
 
+function eid(id){return id.replace(/\./g,'\\\\.');}
 function aiTab(id,topic,btn){
-  document.querySelectorAll(`#ai-tabs-${id} .ai-tab`).forEach(b=>b.classList.remove("act"));
-  document.querySelectorAll(`#ai-panels-${id} .ai-panel`).forEach(p=>p.classList.remove("act"));
+  document.querySelectorAll(`#ai-tabs-${eid(id)} .ai-tab`).forEach(b=>b.classList.remove("act"));
+  document.querySelectorAll(`#ai-panels-${eid(id)} .ai-panel`).forEach(p=>p.classList.remove("act"));
   btn.classList.add("act");
   document.getElementById(`ai-panel-${id}-${topic}`).classList.add("act");
 }
@@ -508,7 +512,7 @@ function buildCard(item,showP){
     <div class="ai-sec">
       <div class="ai-hdr">
         <div class="ai-lbl">🤖 AI 深度解析</div>
-        <button id="ai-btn-${item.id}" class="ai-gen" onclick="aiDive('${item.id}',document.querySelector('#ai-tabs-${item.id} .ai-tab.act')?.dataset?.t||'intent')">✦ 生成</button>
+        <button id="ai-btn-${item.id}" class="ai-gen" onclick="aiDive('${item.id}','intent')">✦ 生成</button>
       </div>
       <div class="ai-tabs" id="ai-tabs-${item.id}">
         <button class="ai-tab act" data-t="intent" onclick="aiTab('${item.id}','intent',this);aiDive('${item.id}','intent')">🎯 意图</button>
