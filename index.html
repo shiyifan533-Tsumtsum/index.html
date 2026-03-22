@@ -405,10 +405,10 @@ async function aiDive(id,topic){
   const body=document.getElementById("ai-b-"+id+"-"+topic);
   const spin=document.getElementById("ai-s-"+id+"-"+topic);
   const btn=document.getElementById("ai-btn-"+id);
-  if(!body||!spin){alert("UI元素未找到，请刷新页面重试。id="+id+" topic="+topic);return;}
-  // get active tab topic
-  const activetab=document.querySelector(`#ai-tabs-${eid(id)} .ai-tab.act`);
-  if(!topic&&activetab)topic=activetab.dataset.t||"intent";
+  if(!body||!spin){alert("UI元素未找到，请刷新页面重试。");return;}
+  const tabsEl=document.getElementById("ai-tabs-"+id);
+  const activetab=tabsEl?tabsEl.querySelector(".ai-tab.act"):null;
+  if(!topic)topic=(activetab&&activetab.dataset.t)||"intent";
   if(AC[ck]){body.innerHTML=md2html(AC[ck]);body.classList.add("on");spin.classList.remove("on");return;}
   const prompts={
     intent:`你是WCAG 2.2无障碍专家，用中文回答。针对WCAG 2.2成功标准 ${id} 「${item.cn}」(${item.en})，详细解释：
@@ -459,10 +459,13 @@ async function aiDive(id,topic){
 
 function eid(id){return id.replace(/\./g,'\\\\.');}
 function aiTab(id,topic,btn){
-  document.querySelectorAll(`#ai-tabs-${eid(id)} .ai-tab`).forEach(b=>b.classList.remove("act"));
-  document.querySelectorAll(`#ai-panels-${eid(id)} .ai-panel`).forEach(p=>p.classList.remove("act"));
+  const tabsEl=document.getElementById("ai-tabs-"+id);
+  const panelsEl=document.getElementById("ai-panels-"+id);
+  if(tabsEl)tabsEl.querySelectorAll(".ai-tab").forEach(b=>b.classList.remove("act"));
+  if(panelsEl)panelsEl.querySelectorAll(".ai-panel").forEach(p=>p.classList.remove("act"));
   btn.classList.add("act");
-  document.getElementById(`ai-panel-${id}-${topic}`).classList.add("act");
+  const panel=document.getElementById("ai-panel-"+id+"-"+topic);
+  if(panel)panel.classList.add("act");
 }
 
 function md2html(s){
